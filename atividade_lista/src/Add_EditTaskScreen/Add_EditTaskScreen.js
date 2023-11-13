@@ -59,7 +59,7 @@ const Add_EditTaskScreen = ({ route, navigation }) => {
 
             }
         } else {
-            Alert.alert("Inexistent name", "Enter a name to add the task");
+            Alert.alert("Inexistent name", "Enter a name to add/edit the task");
         }
     }
 
