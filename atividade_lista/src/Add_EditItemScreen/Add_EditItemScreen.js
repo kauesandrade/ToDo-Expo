@@ -32,20 +32,19 @@ const Add_EditItemScreen = ({ route, navigation }) => {
     }
 
     const saveName = async () => {
+        if (itemName) {
+            if (IDItem >= 0) {
 
-        if (IDItem >= 0) {
+                if (tasks[IDTask].itens[IDItem].itemName != itemName) {
+                    tasks[IDTask].itens[IDItem].itemName = itemName;
+                    tasks[IDTask].itens[IDItem].date = new Date();
+                    tasks[IDTask].date = new Date();
+                    await AsyncStorage.setItem(metadata.TASK.TASK, JSON.stringify(tasks));
+                }
+                voltar();
 
-            if (tasks[IDTask].itens[IDItem].itemName != itemName) {
-                tasks[IDTask].itens[IDItem].itemName = itemName;
-                tasks[IDTask].itens[IDItem].date = new Date();
-                tasks[IDTask].date = new Date();
-                await AsyncStorage.setItem(metadata.TASK.TASK, JSON.stringify(tasks));
             }
-            voltar();
-
-        }
-        else {
-            if (itemName) {
+            else {
                 const newItem = {
                     itemName: itemName,
                     date: new Date()
@@ -60,10 +59,10 @@ const Add_EditItemScreen = ({ route, navigation }) => {
                 } catch (e) {
                     console.log(e);
                 }
-            } else {
-                Alert.alert("Inexistent name", "Enter a name to add the item");
-            }
 
+            }
+        } else {
+            Alert.alert("Inexistent name", "Enter a name to add/edit the item");
         }
     }
 

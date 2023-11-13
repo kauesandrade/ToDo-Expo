@@ -30,18 +30,17 @@ const Add_EditTaskScreen = ({ route, navigation }) => {
     }
 
     const saveName = async () => {
+        if (taskName) {
+            if (IDTask >= 0) {
+                if (tasks[IDTask].taskName != taskName) {
+                    tasks[IDTask].date = new Date();
+                    tasks[IDTask].taskName = taskName;
+                    await AsyncStorage.setItem(metadata.TASK.TASK, JSON.stringify(tasks));
+                }
+                voltar();
 
-        if (IDTask >= 0) {
-            if (tasks[IDTask].taskName != taskName) {
-                tasks[IDTask].date = new Date();
-                tasks[IDTask].taskName = taskName;
-                await AsyncStorage.setItem(metadata.TASK.TASK, JSON.stringify(tasks));
             }
-            voltar();
-
-        }
-        else {
-            if (taskName) {
+            else {
                 const newTask = {
                     taskName: taskName,
                     itens: [],
@@ -56,13 +55,12 @@ const Add_EditTaskScreen = ({ route, navigation }) => {
                 } catch (e) {
                     console.log(e);
                 }
-            } else {
-                Alert.alert("Inexistent name", "Enter a name to add the task");
+
+
             }
-
-
+        } else {
+            Alert.alert("Inexistent name", "Enter a name to add the task");
         }
-
     }
 
     const voltar = () => {
