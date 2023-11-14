@@ -16,10 +16,16 @@ const HomeScreen = ({ navigation }) => {
         setTasks([...sortTasksByDateDescending(existingTaksJSON)]);
     }
 
-    const deleteTask = async (i) => {
-        tasks.splice(i, 1);
-        await AsyncStorage.setItem(metadata.TASK.TASK, JSON.stringify(tasks));
+    const deleteTask = async (type, id) => {
+
+        if (type == "task") {
+            tasks.splice(id, 1);
+        } else if (type == "all") {
+            tasks.splice(0, tasks.length);
+        }
+        setAsyncStorage();
         getTasks();
+
     }
     const TransformDate = (date) => {
         return new Date(date).toLocaleString();
@@ -42,32 +48,31 @@ const HomeScreen = ({ navigation }) => {
     const array = useMemo(() => {
         if (tasks) {
             return (
-                <View style={styles.containerArray}>
+                <View style={styles.container}>
                     {
-                        tasks.map((index, i) => {
+                        tasks.map((task, id) => {
                             return (
-                                <View style={styles.ArryItens}>
+                                <View key={id} style={styles.ArryTasks}>
                                     <View
                                         onTouchStart={() => {
                                             setAsyncStorage(),
-                                                navigation.navigate("Task", { idTask: i })
+                                                navigation.navigate("Task", { idTask: id })
                                         }}
                                     >
                                         <Text style={styles.textName}>
-                                            {tasks[i].taskName}
+                                            {task.taskName}
                                         </Text>
 
                                         <Text style={styles.textDate}>
-                                            {TransformDate(tasks[i].date)}
+                                            {TransformDate(task.date)}
                                         </Text>
 
                                     </View>
 
-
                                     <View style={styles.buttonsEdit}>
                                         <Pressable onPress={() => {
                                             setAsyncStorage()
-                                            navigation.navigate("Add/Edit Task", { idTask: i })
+                                            navigation.navigate("Add/Edit Task", { idTask: id })
                                         }}
                                         >
                                             <Icon
@@ -75,7 +80,7 @@ const HomeScreen = ({ navigation }) => {
                                             />
                                         </Pressable>
 
-                                        <Pressable onPress={() => { deleteTask(i) }} >
+                                        <Pressable onPress={() => { deleteTask("task", id) }} >
                                             <Icon
                                                 name="delete" color='#FFFFFF'
                                             />
@@ -90,9 +95,7 @@ const HomeScreen = ({ navigation }) => {
             )
         } else {
             return (
-                <View>
-
-                </View>
+                <View></View>
             )
         }
 
@@ -104,6 +107,15 @@ const HomeScreen = ({ navigation }) => {
             <Pressable style={styles.button} onPress={() => { navigation.navigate("Add/Edit Task") }}>
                 <Text style={styles.buttonText}>Add Task</Text>
             </Pressable>
+
+            <View style={styles.containerArray}>
+
+                <Pressable style={styles.buttonDeleteAll} onPress={() => { deleteTask("all", 0) }}>
+                    <Text style={styles.buttonText}>Remove All</Text>
+                </Pressable>
+
+            </View>
+
 
             {array}
 
@@ -121,15 +133,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%'
     },
-    containerArray: {
-        flex: 1,
-        gap: 15,
-        padding: 15,
-        backgroundColor: '#cce3de',
-        alignItems: 'center',
-        width: '100%'
-    },
-    ArryItens: {
+    ArryTasks: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
@@ -159,6 +163,16 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
         borderStyle: 'solid',
         padding: 10,
+        overflow: 'hidden',
+        backgroundColor: '#6b9080',
+        borderRadius: 10
+    },
+    buttonDeleteAll: {
+        width: '35%',
+        borderWidth: 1,
+        borderColor: 'transparent',
+        borderStyle: 'solid',
+        padding: 3,
         overflow: 'hidden',
         backgroundColor: '#6b9080',
         borderRadius: 10

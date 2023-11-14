@@ -27,10 +27,15 @@ const TaskScreen = ({ route, navigation }) => {
         }
     }
 
-    const deleteItem = async (i) => {
-        itens.splice(i, 1);
+    const deleteItem = async (type, id) => {
+
+        if (type == "item") {
+            itens.splice(id, 1);
+        } else if (type == "all") {
+            itens.splice(0, itens.length);
+        }
         tasks[IDTask].itens = itens
-        await AsyncStorage.setItem(metadata.TASK.TASK, JSON.stringify(tasks));
+        setAsyncStorage();
         getItens();
     }
 
@@ -55,27 +60,26 @@ const TaskScreen = ({ route, navigation }) => {
     const array = useMemo(() => {
         if (itens) {
             return (
-                <View style={styles.containerArray}>
+                <View style={styles.container}>
                     {
-                        itens.map((index, i) => {
+                        itens.map((item, id) => {
                             return (
-                                <View style={styles.ArryItens}>
+                                <View key={id} style={styles.ArryItens}>
                                     <View>
                                         <Text style={styles.textName}>
-                                            {itens[i].itemName}
+                                            {item.itemName}
                                         </Text>
 
                                         <Text style={styles.textDate}>
-                                            {TransformDate(itens[i].date)}
+                                            {TransformDate(item.date)}
                                         </Text>
 
                                     </View>
 
-
                                     <View style={styles.buttonsEdit}>
                                         <Pressable onPress={() => {
                                             setAsyncStorage()
-                                            navigation.navigate("Add/Edit Item", { idTask: IDTask, idItem: i })
+                                            navigation.navigate("Add/Edit Item", { idTask: IDTask, idItem: id })
                                         }}
                                         >
                                             <Icon
@@ -83,7 +87,7 @@ const TaskScreen = ({ route, navigation }) => {
                                             />
                                         </Pressable>
 
-                                        <Pressable onPress={() => { deleteItem(i) }} >
+                                        <Pressable onPress={() => { deleteItem("item", id) }} >
                                             <Icon
                                                 name="delete" color='#FFFFFF'
                                             />
@@ -91,18 +95,6 @@ const TaskScreen = ({ route, navigation }) => {
                                     </View>
 
                                 </View>
-
-
-                                // <View>
-                                //     <Text>
-                                //         TASK {i + 1}º: {itens[i].itemName} - {TransformDate(itens[i].date)}
-                                //     </Text>
-                                //     <Button title="Editar" onPress={() => {
-                                //         setAsyncStorage()
-                                //         navigation.navigate("Add/Edit Item", { idTask: IDTask, idItem: i  })
-                                //     }} />
-                                //     <Button title="Remover" onPress={() => deleteItem(i)} />
-                                // </View>
                             )
                         })
                     }
@@ -110,9 +102,7 @@ const TaskScreen = ({ route, navigation }) => {
             )
         } else {
             return (
-                <View>
-
-                </View>
+                <View></View>
             )
         }
 
@@ -129,6 +119,11 @@ const TaskScreen = ({ route, navigation }) => {
                 <Text style={styles.buttonText}>Add Item</Text>
             </Pressable>
 
+            <Pressable style={styles.buttonDeleteAll} onPress={() => { deleteItem("all", 0) }}>
+                <Text style={styles.buttonText}>Remove All</Text>
+            </Pressable>
+
+
             {array}
 
         </View>
@@ -137,14 +132,6 @@ const TaskScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        gap: 15,
-        padding: 15,
-        backgroundColor: '#cce3de',
-        alignItems: 'center',
-        width: '100%'
-    },
-    containerArray: {
         flex: 1,
         gap: 15,
         padding: 15,
@@ -187,6 +174,16 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
         borderStyle: 'solid',
         padding: 10,
+        overflow: 'hidden',
+        backgroundColor: '#6b9080',
+        borderRadius: 10
+    },
+    buttonDeleteAll: {
+        width: '35%',
+        borderWidth: 1,
+        borderColor: 'transparent',
+        borderStyle: 'solid',
+        padding: 3,
         overflow: 'hidden',
         backgroundColor: '#6b9080',
         borderRadius: 10
