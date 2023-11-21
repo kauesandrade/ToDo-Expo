@@ -35,6 +35,7 @@ const TaskScreen = ({ route, navigation }) => {
             itens.splice(0, itens.length);
         }
         tasks[IDTask].itens = itens
+        tasks[IDTask].date = new Date();
         setAsyncStorage();
         getItens();
     }
